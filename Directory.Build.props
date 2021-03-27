@@ -6,7 +6,9 @@
 		<Product>Ademund.OTC.Client</Product>
 		<RepositoryType>Git</RepositoryType>
 		<RepositoryUrl>https://github.com/Ademund/Ademund.OTC.Client.git</RepositoryUrl>
-		<BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
-		<VersionPrefix>0.0.1.$(BuildNumber)</VersionPrefix>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">0</BuildNumber>
+		<VersionPrefix>0.0.1.$(BUILD_NUMBER)</VersionPrefix>
+		<VersionSuffix>-alpha</VersionSuffix>
+		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
   </PropertyGroup>
 </Project>
