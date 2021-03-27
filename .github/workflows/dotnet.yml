@@ -28,8 +28,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --no-restore --configuration Debug
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Pack
+      run: dotnet pack --configuration Release Ademund.OTC.Client/Ademund.OTC.Client.csproj
     - name: Publish
-      run: dotnet nuget push --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate Ademund.OTC.Client/bin/Release/*.nupkg
+      run: dotnet nuget push --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate Ademund.OTC.Client/bin/Release/**.nupkg
