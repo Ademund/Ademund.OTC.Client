@@ -5,9 +5,14 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.Client.Examples", "Ademund.OTC.Client.Examples\Ademund.OTC.Client.Examples.csproj", "{A0412D97-129E-4145-A564-03AE9D755BFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ademund.OTC.Client", "Ademund.OTC.Client\Ademund.OTC.Client.csproj", "{03AB5734-6466-4ACE-95EA-7A8B75D2E398}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.Client", "Ademund.OTC.Client\Ademund.OTC.Client.csproj", "{03AB5734-6466-4ACE-95EA-7A8B75D2E398}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ademund.OTC.DynamicIp", "Ademund.OTC.DynamicIp\Ademund.OTC.DynamicIp.csproj", "{69D19415-DB5E-4E68-9219-667A6CB62714}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.DynamicIp", "Ademund.OTC.DynamicIp\Ademund.OTC.DynamicIp.csproj", "{69D19415-DB5E-4E68-9219-667A6CB62714}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30C29417-3335-418E-AB39-8E694026C8D7}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
