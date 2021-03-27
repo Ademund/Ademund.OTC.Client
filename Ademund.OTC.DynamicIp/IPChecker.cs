@@ -26,7 +26,7 @@ namespace Ademund.OTC.DynamicIp
             Systray = systrayMenu;
             PrevIP = currentIP;
 
-            var machineName = Environment.MachineName;
+            string machineName = Environment.MachineName;
             string macAddress = NetworkInterface
                 .GetAllNetworkInterfaces()
                 .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)

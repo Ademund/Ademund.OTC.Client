@@ -27,7 +27,7 @@ namespace Ademund.OTC.DynamicIp
             CheckStartup();
 
             // create a thread  
-            Thread newWindowThread = new Thread(new ThreadStart(() =>
+            var newWindowThread = new Thread(new ThreadStart(() =>
             {
                 // create and show the window
                 var contextMenu = new ContextMenu();
@@ -91,9 +91,9 @@ namespace Ademund.OTC.DynamicIp
             if (Config.StartMinimized)
                 HideWindow();
 
-            var currentExePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            string currentExePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            var keyValue = rk.GetValue(AppName, string.Empty).ToString();
+            string keyValue = rk.GetValue(AppName, string.Empty).ToString();
             if (Config.AutoStart && (string.IsNullOrWhiteSpace(keyValue) || keyValue != currentExePath))
             {
                 rk.SetValue(AppName, System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
