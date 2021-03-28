@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Ademund.OTC.Client": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "BUILD_NUMBER": "0"
+      }
+    }
+  }
+}

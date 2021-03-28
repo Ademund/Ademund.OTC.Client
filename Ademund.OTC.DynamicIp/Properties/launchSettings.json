@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Ademund.OTC.DynamicIp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "BUILD_NUMBER": "0"
+      }
+    }
+  }
+}
