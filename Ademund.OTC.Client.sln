@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.Client.Examples
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.Client", "Ademund.OTC.Client\Ademund.OTC.Client.csproj", "{03AB5734-6466-4ACE-95EA-7A8B75D2E398}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.DynamicIp", "Ademund.OTC.DynamicIp\Ademund.OTC.DynamicIp.csproj", "{69D19415-DB5E-4E68-9219-667A6CB62714}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30C29417-3335-418E-AB39-8E694026C8D7}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{03AB5734-6466-4ACE-95EA-7A8B75D2E398}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03AB5734-6466-4ACE-95EA-7A8B75D2E398}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03AB5734-6466-4ACE-95EA-7A8B75D2E398}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69D19415-DB5E-4E68-9219-667A6CB62714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69D19415-DB5E-4E68-9219-667A6CB62714}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69D19415-DB5E-4E68-9219-667A6CB62714}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69D19415-DB5E-4E68-9219-667A6CB62714}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
