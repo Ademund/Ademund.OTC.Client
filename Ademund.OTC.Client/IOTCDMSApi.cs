@@ -26,5 +26,26 @@ namespace Ademund.OTC.Client
         Task DeleteQueue(
             [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId);
+
+        [Post("/v1.0/{project_id}/queues/{queue_id}/groups")]
+        Task<DMSConsumerGroupsCollection> CreateConsumerGroups(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Body] DMSConsumerGroupsCollection groups);
+
+        [Get("/v1.0/{project_id}/queues/{queue_id}/groups")]
+        Task<DMSConsumerGroupsCollection> GetConsumerGroups(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Query("include_deadletter")] bool includeDeadletter = false,
+            [Query("page_size")] int pageSize = 100,
+            [Query("current_page")] int currentPage = 1
+            );
+
+        [Delete("/v1.0/{project_id}/queues/{queue_id}/groups/{group_id}")]
+        Task DeleteConsumerGroup(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Path("group_id")] string groupId);
     }
 }

@@ -1,7 +1,11 @@
-﻿using Ademund.OTC.Examples.Config;
+﻿using Ademund.OTC.Client.Model;
+using Ademund.OTC.Examples.Config;
 using Ademund.OTC.Utils;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ademund.OTC.Client.Examples
@@ -54,18 +58,37 @@ namespace Ademund.OTC.Client.Examples
                 var api = client.InitOTCApi<IOTCDMSApi>($"https://dms.{example.Region}.otc.t-systems.com");
                 api.ProjectId = config.ProjectId;
 
-                var createResponse = await api.CreateQueue(config.ProjectId, new Model.DMSQueue() {
+                var queue = await api.CreateQueue(config.ProjectId, new DMSQueue() {
                     Name = "test-queue",
                     Description = "This is a FIFO queue",
                     QueueMode = "FIFO",
                     RedrivePolicy = "enable",
                     MaxConsumeCount = 3
                 });
-                Console.WriteLine($"createResponse: {createResponse}");
+                Console.WriteLine($"queue: {queue}");
 
-                var response = await api.GetQueues(config.ProjectId).ConfigureAwait(false);
+                Console.WriteLine("Press a key to create a consumer group");
+                Console.ReadKey();
 
-                Console.WriteLine($"getResponse: {response}");
+                var groupNames = new List<DMSConsumerGroup>() { new DMSConsumerGroup() { Name = "Test-Consumer-Group" } };
+                var groupsCollection = new DMSConsumerGroupsCollection() { Groups = groupNames };
+                var createConsomerGroups = await api.CreateConsumerGroups(config.ProjectId, queue.Id, groupsCollection);
+                Console.WriteLine($"createConsomerGroups: {createConsomerGroups}");
+
+                Console.WriteLine("Press a key to get consumer groups (wait 3secs)");
+                Console.ReadKey();
+
+                var getConsumerGroups = await api.GetConsumerGroups(config.ProjectId, queue.Id);
+                Console.WriteLine($"getConsumerGroups: {getConsumerGroups}");
+
+                Console.WriteLine("Press a key to delete a consumer group");
+                Console.ReadKey();
+                await api.DeleteConsumerGroup(config.ProjectId, queue.Id, getConsumerGroups.Groups.First().Id);
+
+                Console.WriteLine("Press a key to get consumer groups (wait 3secs)");
+                Console.ReadKey();
+                getConsumerGroups = await api.GetConsumerGroups(config.ProjectId, queue.Id);
+                Console.WriteLine($"getConsumerGroups: {getConsumerGroups}");
 
                 Console.WriteLine("Press any key to continue");
                 Console.ReadKey();
