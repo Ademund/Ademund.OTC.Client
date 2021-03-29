@@ -45,8 +45,8 @@ namespace Ademund.OTC.Client
 
             return new RestClient(httpClient)
             {
-                ResponseDeserializer = new CustomJsonResponseDeserializer()
-                //JsonSerializerSettings = settings
+                ResponseDeserializer = new CustomJsonResponseDeserializer(),
+                JsonSerializerSettings = settings
             }.For<T>();
         }
     }

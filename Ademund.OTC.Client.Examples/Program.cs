@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Ademund.OTC.Client.Examples
 {
@@ -67,33 +68,54 @@ namespace Ademund.OTC.Client.Examples
                 });
                 Console.WriteLine($"queue: {queue}");
 
-                Console.WriteLine("Press a key to create a consumer group");
-                Console.ReadKey();
-
+                Console.WriteLine("create a consumer group");
                 var groupNames = new List<DMSConsumerGroup>() { new DMSConsumerGroup() { Name = "Test-Consumer-Group" } };
                 var groupsCollection = new DMSConsumerGroupsCollection() { Groups = groupNames };
                 var createConsomerGroups = await api.CreateConsumerGroups(config.ProjectId, queue.Id, groupsCollection);
                 Console.WriteLine($"createConsomerGroups: {createConsomerGroups}");
 
-                Console.WriteLine("Press a key to get consumer groups (wait 3secs)");
-                Console.ReadKey();
+                Console.WriteLine("get consumer groups (wait 3secs)");
+                Thread.Sleep(3000);
 
                 var getConsumerGroups = await api.GetConsumerGroups(config.ProjectId, queue.Id);
                 Console.WriteLine($"getConsumerGroups: {getConsumerGroups}");
 
-                Console.WriteLine("Press a key to delete a consumer group");
-                Console.ReadKey();
-                await api.DeleteConsumerGroup(config.ProjectId, queue.Id, getConsumerGroups.Groups.First().Id);
+                Console.WriteLine("send a message");
+                var messages = new List<DMSMessage<TypedMessage>>() {
+                    new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = "TypedMessage1", Message = "This is a typed message 1", Count = 1 } },
+                    new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = "TypedMessage2", Message = "This is a typed message 2", Count = 2 } },
+                    new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = "TypedMessage3", Message = "This is a typed message 3", Count = 3 } },
+                };
+                var messagesCollection = new DMSMessagesCollection<TypedMessage>() { Messages = messages };
+                var createMessages = await api.SendMessages(config.ProjectId, queue.Id, messagesCollection);
+                Console.WriteLine($"createMessages: {createMessages}");
 
-                Console.WriteLine("Press a key to get consumer groups (wait 3secs)");
+                Console.WriteLine("consume messages");
+                var comsumeMessages = await api.ConsumeMessages<TypedMessage>(config.ProjectId, queue.Id, createConsomerGroups.Groups.First().Id);
+                Console.WriteLine($"comsumeMessages: {comsumeMessages}");
+                foreach(var message in comsumeMessages)
+                {
+                    Console.WriteLine($" - message: {message}");
+                    Console.WriteLine($" --> Name: {message.Message.Body?.Name}");
+                    Console.WriteLine($" --> Message: {message.Message.Body?.Message}");
+                    Console.WriteLine($" --> Count: {message.Message.Body?.Count}");
+                }
+
+                Console.WriteLine("Press a key to delete the q");
                 Console.ReadKey();
-                getConsumerGroups = await api.GetConsumerGroups(config.ProjectId, queue.Id);
-                Console.WriteLine($"getConsumerGroups: {getConsumerGroups}");
+                await api.DeleteQueue(config.ProjectId, queue.Id);
 
                 Console.WriteLine("Press any key to continue");
                 Console.ReadKey();
                 Console.Clear();
             }
         }
+    }
+
+    public record TypedMessage
+    {
+        [J("Name")] public string Name { get; init; }
+        [J("Message")] public string Message { get; init; }
+        [J("Count")] public int Count { get; init; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Ademund.OTC.Client.Model;
 using RestEase;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ademund.OTC.Client
@@ -47,5 +48,35 @@ namespace Ademund.OTC.Client
             [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Path("group_id")] string groupId);
+
+        [Post("/v1.0/{project_id}/queues/{queue_id}/messages")]
+        Task<DMSSendMessageResponseCollection> SendMessages(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Body] DMSMessagesCollection messages);
+
+        [Post("/v1.0/{project_id}/queues/{queue_id}/messages")]
+        Task<DMSSendMessageResponseCollection> SendMessages<T>(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Body] DMSMessagesCollection<T> messages);
+
+        [Get("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/messages")]
+        Task<IEnumerable<DMSConsumeMessageResponse>> ConsumeMessages(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Path("consumer_group_id")] string groupdId,
+            [Query("max_msgs")] int maxMessages = 10,
+            [Query("time_wait")] int timeWait = 3,
+            [Query("ack_wait")] int ackWait = 30);
+
+        [Get("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/messages")]
+        Task<IEnumerable<DMSConsumeMessageResponse<T>>> ConsumeMessages<T>(
+            [Path("project_id")] string projectId,
+            [Path("queue_id")] string queueId,
+            [Path("consumer_group_id")] string groupdId,
+            [Query("max_msgs")] int maxMessages = 10,
+            [Query("time_wait")] int timeWait = 3,
+            [Query("ack_wait")] int ackWait = 30);
     }
 }
