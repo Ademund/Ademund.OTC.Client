@@ -9,34 +9,28 @@ namespace Ademund.OTC.Client
     {
         [Post("/v1.0/{project_id}/queues")]
         Task<DMSQueue> CreateQueue(
-            [Path("project_id")] string projectId,
             [Body] DMSQueue queue);
 
         [Get("/v1.0/{project_id}/queues")]
         Task<DMSQueuesCollection> GetQueues(
-            [Path("project_id")] string projectId,
             [Query("include_deadletter")] bool includeDeadLetter = false);
 
         [Get("/v1.0/{project_id}/queues/{queue_id}")]
         Task<DMSQueue> GetQueue(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Query("include_deadletter")] bool includeDeadLetter = false);
 
         [Delete("/v1.0/{project_id}/queues/{queue_id}")]
         Task DeleteQueue(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId);
 
         [Post("/v1.0/{project_id}/queues/{queue_id}/groups")]
         Task<DMSConsumerGroupsCollection> CreateConsumerGroups(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Body] DMSConsumerGroupsCollection groups);
 
         [Get("/v1.0/{project_id}/queues/{queue_id}/groups")]
         Task<DMSConsumerGroupsCollection> GetConsumerGroups(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Query("include_deadletter")] bool includeDeadletter = false,
             [Query("page_size")] int pageSize = 100,
@@ -45,25 +39,21 @@ namespace Ademund.OTC.Client
 
         [Delete("/v1.0/{project_id}/queues/{queue_id}/groups/{group_id}")]
         Task DeleteConsumerGroup(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Path("group_id")] string groupId);
 
         [Post("/v1.0/{project_id}/queues/{queue_id}/messages")]
         Task<DMSSendMessageResponseCollection> SendMessages(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Body] DMSMessagesCollection messages);
 
         [Post("/v1.0/{project_id}/queues/{queue_id}/messages")]
         Task<DMSSendMessageResponseCollection> SendMessages<T>(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Body] DMSMessagesCollection<T> messages);
 
         [Get("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/messages")]
         Task<IEnumerable<DMSConsumeMessageResponse>> ConsumeMessages(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Path("consumer_group_id")] string groupdId,
             [Query("max_msgs")] int maxMessages = 10,
@@ -72,11 +62,17 @@ namespace Ademund.OTC.Client
 
         [Get("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/messages")]
         Task<IEnumerable<DMSConsumeMessageResponse<T>>> ConsumeMessages<T>(
-            [Path("project_id")] string projectId,
             [Path("queue_id")] string queueId,
             [Path("consumer_group_id")] string groupdId,
             [Query("max_msgs")] int maxMessages = 10,
             [Query("time_wait")] int timeWait = 3,
             [Query("ack_wait")] int ackWait = 30);
+
+        [Post("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/ack")]
+        Task<DMSMessageAckResponse> AckMessages(
+            [Path("queue_id")] string queueId,
+            [Path("consumer_group_id")] string groupdId,
+            [Body] DMSMessagesAck messages
+            );
     }
 }

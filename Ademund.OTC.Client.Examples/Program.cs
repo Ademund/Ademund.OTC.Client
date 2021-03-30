@@ -1,6 +1,5 @@
 ﻿using Ademund.OTC.Client.Model;
 using Ademund.OTC.Examples.Config;
-using Ademund.OTC.Utils;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -54,13 +53,20 @@ namespace Ademund.OTC.Client.Examples
                 Console.WriteLine($" - RequestUri: {example.RequestUri}");
                 Console.WriteLine();
 
-                var signer = new Signer(config.AccessKey, config.SecretKey, example.Region, example.Service);
-                using var client = new OTCApiClient(signer, config.UseProxy ? config.ProxyAddress : null);
-                var api = client.InitOTCApi<IOTCDMSApi>($"https://dms.{example.Region}.otc.t-systems.com");
-                api.ProjectId = config.ProjectId;
+                string baseUrl = $"https://dms.{example.Region}.otc.t-systems.com";
+                var api = OTCApiClient.InitOTCApi<IOTCDMSApi>(
+                    baseUrl: baseUrl,
+                    key: config.AccessKey,
+                    secret: config.SecretKey,
+                    projectId: config.ProjectId,
+                    region: example.Region,
+                    service: example.Service,
+                    config.UseProxy ? config.ProxyAddress : null
+                    );
 
-                var queue = await api.CreateQueue(config.ProjectId, new DMSQueue() {
-                    Name = "test-queue",
+                /*
+                var queue = await api.CreateQueue(new DMSQueue() {
+                    Name = "magenta-users",
                     Description = "This is a FIFO queue",
                     QueueMode = "FIFO",
                     RedrivePolicy = "enable",
@@ -69,29 +75,42 @@ namespace Ademund.OTC.Client.Examples
                 Console.WriteLine($"queue: {queue}");
 
                 Console.WriteLine("create a consumer group");
-                var groupNames = new List<DMSConsumerGroup>() { new DMSConsumerGroup() { Name = "Test-Consumer-Group" } };
+                var groupNames = new List<DMSConsumerGroup>() { new DMSConsumerGroup() { Name = "migration" } };
                 var groupsCollection = new DMSConsumerGroupsCollection() { Groups = groupNames };
-                var createConsomerGroups = await api.CreateConsumerGroups(config.ProjectId, queue.Id, groupsCollection);
+                var createConsomerGroups = await api.CreateConsumerGroups(queue.Id, groupsCollection);
                 Console.WriteLine($"createConsomerGroups: {createConsomerGroups}");
 
                 Console.WriteLine("get consumer groups (wait 3secs)");
                 Thread.Sleep(3000);
 
-                var getConsumerGroups = await api.GetConsumerGroups(config.ProjectId, queue.Id);
+                var getConsumerGroups = await api.GetConsumerGroups(queue.Id);
                 Console.WriteLine($"getConsumerGroups: {getConsumerGroups}");
 
-                Console.WriteLine("send a message");
-                var messages = new List<DMSMessage<TypedMessage>>() {
-                    new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = "TypedMessage1", Message = "This is a typed message 1", Count = 1 } },
-                    new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = "TypedMessage2", Message = "This is a typed message 2", Count = 2 } },
-                    new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = "TypedMessage3", Message = "This is a typed message 3", Count = 3 } },
-                };
-                var messagesCollection = new DMSMessagesCollection<TypedMessage>() { Messages = messages };
-                var createMessages = await api.SendMessages(config.ProjectId, queue.Id, messagesCollection);
-                Console.WriteLine($"createMessages: {createMessages}");
+                Console.ReadKey();
+                */
 
+                string queueId = "ad2a781a-a675-4e5c-a7e5-8f31d6dfe7a5";
+                for (int i = 0; i < 100; i++)
+                {
+                    Console.WriteLine("send messages");
+                    var messages = new List<DMSMessage<TypedMessage>>() {
+                        new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = $"TypedMessage1-{i}", Message = "This is a typed message 1", Count = i+1 } },
+                        new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = $"TypedMessage2-{i}", Message = "This is a typed message 2", Count = i+2 } },
+                        new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = $"TypedMessage3-{i}", Message = "This is a typed message 3", Count = i+3 } },
+                        new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = $"TypedMessage4-{i}", Message = "This is a typed message 4", Count = i+4 } },
+                        new DMSMessage<TypedMessage>() {Body = new TypedMessage() {Name = $"TypedMessage5-{i}", Message = "This is a typed message 5", Count = i+5 } },
+                    };
+                    if (i == 99)
+                    {
+                        messages.Add(new DMSMessage<TypedMessage>() { Body = new TypedMessage() { Name = "Stop", Message = "This is a Stop message", Count = 0 } });
+                    }
+                    var messagesCollection = new DMSMessagesCollection<TypedMessage>() { Messages = messages };
+                    var createMessages = await api.SendMessages(queueId, messagesCollection);
+                    Console.WriteLine($"createMessages: {createMessages}");
+                }
+                /*
                 Console.WriteLine("consume messages");
-                var comsumeMessages = await api.ConsumeMessages<TypedMessage>(config.ProjectId, queue.Id, createConsomerGroups.Groups.First().Id);
+                var comsumeMessages = await api.ConsumeMessages<TypedMessage>(queue.Id, createConsomerGroups.Groups.First().Id);
                 Console.WriteLine($"comsumeMessages: {comsumeMessages}");
                 foreach(var message in comsumeMessages)
                 {
@@ -100,11 +119,11 @@ namespace Ademund.OTC.Client.Examples
                     Console.WriteLine($" --> Message: {message.Message.Body?.Message}");
                     Console.WriteLine($" --> Count: {message.Message.Body?.Count}");
                 }
-
+                
                 Console.WriteLine("Press a key to delete the q");
                 Console.ReadKey();
-                await api.DeleteQueue(config.ProjectId, queue.Id);
-
+                await api.DeleteQueue(queue.Id);
+                */
                 Console.WriteLine("Press any key to continue");
                 Console.ReadKey();
                 Console.Clear();
