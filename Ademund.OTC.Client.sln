@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ademund.OTC.Client", "Ademu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30C29417-3335-418E-AB39-8E694026C8D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ademund.OTC.DMSUtils", "Ademund.OTC.DMSUtils\Ademund.OTC.DMSUtils.csproj", "{D36B2246-3A92-4334-B6D0-CD82E7CAD4B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{03AB5734-6466-4ACE-95EA-7A8B75D2E398}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03AB5734-6466-4ACE-95EA-7A8B75D2E398}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03AB5734-6466-4ACE-95EA-7A8B75D2E398}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D36B2246-3A92-4334-B6D0-CD82E7CAD4B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D36B2246-3A92-4334-B6D0-CD82E7CAD4B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D36B2246-3A92-4334-B6D0-CD82E7CAD4B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D36B2246-3A92-4334-B6D0-CD82E7CAD4B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

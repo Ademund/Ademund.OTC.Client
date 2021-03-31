@@ -1,4 +1,5 @@
 ﻿using Ademund.OTC.Client.Model;
+using Ademund.OTC.DMSUtils;
 using Ademund.OTC.Examples.Config;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -90,6 +91,7 @@ namespace Ademund.OTC.Client.Examples
                 */
 
                 string queueId = "ad2a781a-a675-4e5c-a7e5-8f31d6dfe7a5";
+                string consumerId = "g-ad1397f3-9544-4c1c-8cb1-322412a1d41b";
                 for (int i = 0; i < 100; i++)
                 {
                     Console.WriteLine("send messages");
@@ -108,18 +110,13 @@ namespace Ademund.OTC.Client.Examples
                     var createMessages = await api.SendMessages(queueId, messagesCollection);
                     Console.WriteLine($"createMessages: {createMessages}");
                 }
+
                 /*
                 Console.WriteLine("consume messages");
-                var comsumeMessages = await api.ConsumeMessages<TypedMessage>(queue.Id, createConsomerGroups.Groups.First().Id);
-                Console.WriteLine($"comsumeMessages: {comsumeMessages}");
-                foreach(var message in comsumeMessages)
-                {
-                    Console.WriteLine($" - message: {message}");
-                    Console.WriteLine($" --> Name: {message.Message.Body?.Name}");
-                    Console.WriteLine($" --> Message: {message.Message.Body?.Message}");
-                    Console.WriteLine($" --> Count: {message.Message.Body?.Count}");
-                }
-                
+                var messagePump = new DMSMessagePump(api);
+                var subscription = messagePump.Subscribe(queueId, consumerId, 15000);
+                subscription.OnMessages += Subscription_OnMessages;
+                messagePump.Start();
                 Console.WriteLine("Press a key to delete the q");
                 Console.ReadKey();
                 await api.DeleteQueue(queue.Id);

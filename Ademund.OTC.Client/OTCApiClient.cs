@@ -15,7 +15,7 @@ namespace Ademund.OTC.Client
         {
             IWebProxy proxy = string.IsNullOrWhiteSpace(proxyAddress) ? null : new WebProxy(proxyAddress);
             var signer = new Signer(key, secret, region, service);
-            var handler = new SigningHttpClientHandler(signer) { Proxy = proxy, UseProxy = proxy != null };
+            var handler = new CustomHttpClientHandler(signer, proxy);
             var httpClient = new HttpClient(handler) {
                 BaseAddress = new Uri(baseUrl)
             };
@@ -26,7 +26,7 @@ namespace Ademund.OTC.Client
                 NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.None
             };
             settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
             settings.Converters.Add(new VersionConverter());

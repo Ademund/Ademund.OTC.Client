@@ -55,7 +55,7 @@ namespace Ademund.OTC.Client
         [Get("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/messages")]
         Task<IEnumerable<DMSConsumeMessageResponse>> ConsumeMessages(
             [Path("queue_id")] string queueId,
-            [Path("consumer_group_id")] string groupdId,
+            [Path("consumer_group_id")] string groupId,
             [Query("max_msgs")] int maxMessages = 10,
             [Query("time_wait")] int timeWait = 3,
             [Query("ack_wait")] int ackWait = 30);
@@ -68,6 +68,7 @@ namespace Ademund.OTC.Client
             [Query("time_wait")] int timeWait = 3,
             [Query("ack_wait")] int ackWait = 30);
 
+        [Header("MaxRetries", "3")]
         [Post("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/ack")]
         Task<DMSMessageAckResponse> AckMessages(
             [Path("queue_id")] string queueId,
