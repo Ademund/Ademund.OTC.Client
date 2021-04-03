@@ -57,7 +57,7 @@ namespace Ademund.OTC.DMSUtils
                 return;
             }
 
-            var response = await _api.ConsumeMessages(QueueId, ConsumerGroupId, BatchSize).ConfigureAwait(false);
+            var response = await _api.ConsumeMessagesAsync(QueueId, ConsumerGroupId, BatchSize).ConfigureAwait(false);
             var responses = response.ToList();
             var eventArgs = new SubscriptionOnMessagesEventArgs(responses.Count);
             if (responses.Count == 0)
@@ -91,10 +91,10 @@ namespace Ademund.OTC.DMSUtils
             var messagesAck = new DMSMessagesAck() {
                 Messages = responses.Select(x => new DMSMessageAck() {
                     Handler = x.Handler,
-                    Status = DMSMessageAckStatus.success
+                    Status = DMSMessageAckStatus.Success
                 }).ToArray()
             };
-            var response = await _api.AckMessages(QueueId, ConsumerGroupId, messagesAck).ConfigureAwait(false);
+            var response = await _api.AckMessagesAsync(QueueId, ConsumerGroupId, messagesAck).ConfigureAwait(false);
         }
 
         private void MessageHandler_OnProcessMessage(object sender, ProcessMessageEventArgs e)

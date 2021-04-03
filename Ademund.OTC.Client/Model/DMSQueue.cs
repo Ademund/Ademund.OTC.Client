@@ -3,7 +3,7 @@ using N = Newtonsoft.Json.NullValueHandling;
 
 namespace Ademund.OTC.Client.Model
 {
-    public record DMSQueue
+    public sealed record DMSQueue
     {
         [J("id", NullValueHandling = N.Ignore)] public string Id { get; init; }
         [J("name")] public string Name { get; init; }

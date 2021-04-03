@@ -3,12 +3,12 @@ using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Ademund.OTC.Client.Model
 {
-    public record DMSMessagesCollection
+    public sealed record DMSMessagesCollection
     {
         [J("messages")] public IEnumerable<DMSMessage> Messages { get; init; } = new List<DMSMessage>();
     }
 
-    public record DMSMessagesCollection<T>
+    public sealed record DMSMessagesCollection<T>
     {
         [J("messages")] public IEnumerable<DMSMessage<T>> Messages { get; init; } = new List<DMSMessage<T>>();
     }

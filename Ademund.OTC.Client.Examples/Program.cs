@@ -107,7 +107,7 @@ namespace Ademund.OTC.Client.Examples
                         messages.Add(new DMSMessage<TypedMessage>() { Body = new TypedMessage() { Name = "Stop", Message = "This is a Stop message", Count = 0 } });
                     }
                     var messagesCollection = new DMSMessagesCollection<TypedMessage>() { Messages = messages };
-                    var createMessages = await api.SendMessages(queueId, messagesCollection);
+                    var createMessages = await api.SendMessagesAsync(queueId, messagesCollection).ConfigureAwait(false);
                     Console.WriteLine($"createMessages: {createMessages}");
                 }
 
