@@ -37,7 +37,8 @@ namespace Ademund.OTC.DMSUtils
         {
             foreach (var subscription in _subscriptions.Values)
                 subscription.Stop();
-            _resetEvent.Set();
+            if (!_resetEvent.SafeWaitHandle.IsClosed)
+                _resetEvent.Set();
         }
 
         public IDMSMessagePumpSubscription Subscribe(string queueId, string consumerGroupId, int pollInterval)
