@@ -9,45 +9,38 @@ using System.Net.Http;
 
 namespace Ademund.OTC.Client
 {
-    public class OTCApiClient : IDisposable
+    public static class OTCApiClient
     {
-        private readonly SigningHttpClientHandler _handler;
-
-        public OTCApiClient(Signer signer, string proxyAddress = null)
+        public static T InitOTCApi<T>(string baseUrl, string key, string secret, string projectId, string region = null, string service = null, string proxyAddress = null) where T: IOTCApiBase
         {
             IWebProxy proxy = string.IsNullOrWhiteSpace(proxyAddress) ? null : new WebProxy(proxyAddress);
-            _handler = new SigningHttpClientHandler(signer) { Proxy = proxy, UseProxy = proxy != null };
-        }
+            var signer = new Signer(key, secret, region, service);
+            var handler = new CustomHttpClientHandler(signer, proxy);
+            var httpClient = new HttpClient(handler) {
+                BaseAddress = new Uri(baseUrl)
+            };
 
-        public void Dispose()
-        {
-            _handler?.Dispose();
-        }
-
-        public T InitOTCApi<T>(string baseUrl)
-        {
-            var settings = new JsonSerializerSettings()
-            {
+            var settings = new JsonSerializerSettings() {
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
                 Formatting = Formatting.Indented,
                 NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.None
             };
             settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
             settings.Converters.Add(new VersionConverter());
 
-            var httpClient = new HttpClient(_handler)
-            {
-                BaseAddress = new Uri(baseUrl)
+            var restClient = new RestClient(httpClient) {
+                ResponseDeserializer = new CustomJsonResponseDeserializer(),
+                JsonSerializerSettings = settings
             };
 
-            return new RestClient(httpClient)
-            {
-                ResponseDeserializer = new CustomJsonResponseDeserializer()
-                //JsonSerializerSettings = settings
-            }.For<T>();
+            var api = restClient.For<T>();
+            api.XProjectId = projectId;
+            api.ProjectId = projectId;
+
+            return api;
         }
     }
 }

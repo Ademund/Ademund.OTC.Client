@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Ademund.OTC.Client.Model
 {
-    public class SecurityGroupsCollection
+    public sealed record SecurityGroupsCollection
     {
-        [JsonProperty("security_groups")]
-        public IEnumerable<SecurityGroup> SecurityGroups { get; init; } = new List<SecurityGroup>();
+        [J("security_groups")] public IEnumerable<SecurityGroup> SecurityGroups { get; init; } = new List<SecurityGroup>();
     }
 }

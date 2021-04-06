@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Ademund.OTC.Client.Model
 {
-    public record SMNTopic
+    public sealed record SMNTopic
     {
-        [JsonProperty("topic_urn")]
-        public string TopicUrn { get; init; }
-        [JsonProperty("display_name")]
-        public string DisplayName { get; init; }
-        [JsonProperty("name")]
-        public string Name { get; init; }
-        [JsonProperty("push_policy")]
-        public int? PushPolicy { get; init; }
+        [J("topic_urn")] public string TopicUrn { get; init; }
+        [J("display_name")] public string DisplayName { get; init; }
+        [J("name")] public string Name { get; init; }
+        [J("push_policy")] public int? PushPolicy { get; init; }
     }
 }

@@ -1,25 +1,15 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using J = Newtonsoft.Json.JsonPropertyAttribute;
+using N = Newtonsoft.Json.NullValueHandling;
 
 namespace Ademund.OTC.Client.Model
 {
-    public record SecurityGroup
+    public sealed record SecurityGroup
     {
-        [JsonProperty("id")]
-        public string Id { get; init; }
-        [JsonProperty("name")]
-        public string Name { get; init; }
-        [JsonProperty("description")]
-        public string Description { get; init; }
-        [JsonProperty("vpc_id")]
-        public string VpcId { get; init; }
-        [JsonProperty("security_group_rules")]
-        public IEnumerable<SecurityGroupRule> Rules { get; init; } = new List<SecurityGroupRule>();
-    }
-
-    public record SecurityGroupResponse
-    {
-        [JsonProperty("security_group")]
-        public SecurityGroup SecurityGroup { get; init; }
+        [J("id")] public string Id { get; init; }
+        [J("name")] public string Name { get; init; }
+        [J("description")] public string Description { get; init; }
+        [J("vpc_id", NullValueHandling = N.Ignore)] public string VpcId { get; init; }
+        [J("security_group_rules")] public IEnumerable<SecurityGroupRule> Rules { get; init; } = new List<SecurityGroupRule>();
     }
 }
