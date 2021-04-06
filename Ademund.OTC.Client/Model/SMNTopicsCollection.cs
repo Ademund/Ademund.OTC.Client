@@ -3,7 +3,7 @@ using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Ademund.OTC.Client.Model
 {
-    public record SMNTopicsCollection
+    public sealed record SMNTopicsCollection
     {
         [J("request_id")] public string RequestId { get; init; }
         [J("topic_count")] public int TopicCount { get; init; } = 0;

@@ -2,7 +2,7 @@
 
 namespace Ademund.OTC.Client.Model
 {
-    public record SMNTopic
+    public sealed record SMNTopic
     {
         [J("topic_urn")] public string TopicUrn { get; init; }
         [J("display_name")] public string DisplayName { get; init; }

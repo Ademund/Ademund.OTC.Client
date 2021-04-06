@@ -2,7 +2,7 @@
 
 namespace Ademund.OTC.Client.Model
 {
-    public record SecurityGroupRule
+    public sealed record SecurityGroupRule
     {
         [J("id")] public string Id { get; init; }
         [J("description")] public string Description { get; init; }
@@ -15,15 +15,5 @@ namespace Ademund.OTC.Client.Model
         [J("remote_group_id")] public string RemoteGroupId { get; init; }
         [J("security_group_id")] public string SecurityGroupId { get; init; }
         [J("tenant_id")] public string TenantId { get; init; }
-    }
-
-    public record SecurityGroupRuleRequest
-    {
-        [J("security_group_rule")] public SecurityGroupRule SecurityGroupRule { get; init; }
-    }
-
-    public record SecurityGroupRuleResponse
-    {
-        [J("security_group_rule")] public SecurityGroup SecurityGroupRule { get; init; }
     }
 }
