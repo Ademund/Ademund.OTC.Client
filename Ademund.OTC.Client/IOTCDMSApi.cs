@@ -1,6 +1,7 @@
 ﻿using Ademund.OTC.Client.Model;
 using RestEase;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ademund.OTC.Client
@@ -58,7 +59,8 @@ namespace Ademund.OTC.Client
             [Path("consumer_group_id")] string groupId,
             [Query("max_msgs")] int maxMessages = 10,
             [Query("time_wait")] int timeWait = 3,
-            [Query("ack_wait")] int ackWait = 30);
+            [Query("ack_wait")] int ackWait = 30,
+            CancellationToken cancellationToken = default);
 
         [Get("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/messages")]
         Task<IEnumerable<DMSConsumeMessageResponse<T>>> ConsumeMessagesAsync<T>(
@@ -66,14 +68,15 @@ namespace Ademund.OTC.Client
             [Path("consumer_group_id")] string groupdId,
             [Query("max_msgs")] int maxMessages = 10,
             [Query("time_wait")] int timeWait = 3,
-            [Query("ack_wait")] int ackWait = 30);
+            [Query("ack_wait")] int ackWait = 30,
+            CancellationToken cancellationToken = default);
 
         [Header("MaxRetries", "3")]
         [Post("/v1.0/{project_id}/queues/{queue_id}/groups/{consumer_group_id}/ack")]
         Task<DMSMessageAckResponse> AckMessagesAsync(
             [Path("queue_id")] string queueId,
             [Path("consumer_group_id")] string groupdId,
-            [Body] DMSMessagesAck messages
-            );
+            [Body] DMSMessagesAck messages,
+            CancellationToken cancellationToken = default);
     }
 }

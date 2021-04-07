@@ -1,39 +1,40 @@
 ﻿using Ademund.OTC.Client.Model;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Ademund.OTC.DMSUtils
 {
     internal class DMSMessageHandler
     {
+        private readonly CancellationTokenSource _tokenSource;
         private readonly Queue<DMSMessage> _messages = new Queue<DMSMessage>();
         private event EventHandler OnMessagesReceived;
-        private bool _cancelled;
 
         public event EventHandler<MessagesCompletedEventArgs> OnMessagesCompleted;
         public event EventHandler<ProcessMessageEventArgs> OnProcessMessage;
         internal event EventHandler<ProcessMessageErrorEventArgs> OnProcessMessageError;
 
-        public DMSMessageHandler()
+        public DMSMessageHandler(CancellationTokenSource tokenSource)
         {
+            _tokenSource = tokenSource;
             OnMessagesReceived += DMSMessageHandler_OnMessagesReceived;
         }
 
         public void Start()
         {
-            _cancelled = false;
         }
 
         public void Stop()
         {
-            _cancelled = true;
+            _tokenSource.Cancel();
         }
 
         public void HandleMessages(IEnumerable<DMSMessage> messages)
         {
             foreach (var message in messages)
             {
-                if (_cancelled)
+                if (_tokenSource.IsCancellationRequested)
                     break;
                 _messages.Enqueue(message);
             }
@@ -42,7 +43,7 @@ namespace Ademund.OTC.DMSUtils
 
         private void DMSMessageHandler_OnMessagesReceived(object sender, EventArgs e)
         {
-            if (_cancelled)
+            if (_tokenSource.IsCancellationRequested)
                 return;
             ProcessMessages();
         }
@@ -55,12 +56,12 @@ namespace Ademund.OTC.DMSUtils
                 if (_messages.Count == 0)
                     return;
 
-                while (!cancel && !_cancelled && (_messages.Count > 0))
+                while (!cancel && !_tokenSource.IsCancellationRequested && (_messages.Count > 0))
                 {
                     cancel = ProcessMessage(_messages.Dequeue());
                 }
 
-                if (_cancelled)
+                if (_tokenSource.IsCancellationRequested)
                     return;
 
                 if (cancel)
@@ -72,13 +73,16 @@ namespace Ademund.OTC.DMSUtils
             }
             finally
             {
-                if (cancel || _cancelled)
+                if (!_tokenSource.IsCancellationRequested)
                 {
-                    Stop();
-                }
-                else
-                {
-                    Start();
+                    if (cancel)
+                    {
+                        Stop();
+                    }
+                    else
+                    {
+                        Start();
+                    }
                 }
             }
         }
