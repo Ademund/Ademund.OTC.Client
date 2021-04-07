@@ -20,6 +20,8 @@ jobs:
         source-url: https://nuget.pkg.github.com/Ademund/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
+    - name: Clean
+      run: dotnet clean ./Ademund.OTC.Client.sln --configuration Release && dotnet nuget locals all --clear
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
