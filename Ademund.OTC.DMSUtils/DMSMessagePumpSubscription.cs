@@ -72,6 +72,8 @@ namespace Ademund.OTC.DMSUtils
                 {
                     await messageProcessorAsync.ProcessAsync(messages).ConfigureAwait(false);
                 }
+
+                _timer.Start();
             }
             catch (TaskCanceledException) { }
         }
