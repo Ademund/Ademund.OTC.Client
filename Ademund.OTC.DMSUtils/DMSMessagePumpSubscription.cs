@@ -1,6 +1,5 @@
 ﻿using Ademund.OTC.Client;
 using Ademund.OTC.Client.Model;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,27 +9,28 @@ namespace Ademund.OTC.DMSUtils
 {
     internal class DMSMessagePumpSubscription : IDMSMessagePumpSubscription
     {
-        private readonly System.Threading.CancellationTokenSource _tokenSource;
-        private readonly DMSMessageHandler _messageHandler;
+        private readonly System.Threading.CancellationToken _cancellationToken;
         private readonly IOTCDMSApi _api;
+        private readonly IMessageProcessor _messageProcessor;
         private readonly Timer _timer;
         public string QueueId { get; }
         public string ConsumerGroupId { get; }
         public int BatchSize { get; }
         public int PollInterval { get; }
 
-        public event EventHandler<SubscriptionOnMessagesEventArgs> OnMessagesReceived;
-        public event EventHandler<MessagesCompletedEventArgs> OnMessagesCompleted;
-        public event EventHandler<ProcessMessageEventArgs> OnProcessMessage;
-
-        public DMSMessagePumpSubscription(IOTCDMSApi api, string queueId, string consumerGroupId, int pollInterval, int batchSize = 10)
+        public DMSMessagePumpSubscription(
+            IOTCDMSApi api,
+            IMessageProcessor messageProcessor,
+            string queueId,
+            string consumerGroupId,
+            int pollInterval,
+            int batchSize = 10,
+            System.Threading.CancellationToken cancellationToken = default)
         {
             _api = api;
-            _tokenSource = new System.Threading.CancellationTokenSource();
-            _messageHandler = new DMSMessageHandler(_tokenSource);
-            _messageHandler.OnMessagesCompleted += MessageHandler_OnMessagesCompleted;
-            _messageHandler.OnProcessMessage += MessageHandler_OnProcessMessage;
-            _messageHandler.OnProcessMessageError += MessageHandler_OnProcessMessageError;
+            _messageProcessor = messageProcessor;
+            _cancellationToken = cancellationToken;
+
             _timer = new Timer(pollInterval) {
                 AutoReset = false
             };
@@ -51,41 +51,27 @@ namespace Ademund.OTC.DMSUtils
         {
             try
             {
-                if (_tokenSource.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
-                if (OnMessagesReceived?.GetInvocationList()?.Length == 0)
-                {
-                    _timer.Start();
-                    return;
-                }
-                var response = await _api.ConsumeMessagesAsync(QueueId, ConsumerGroupId, BatchSize, cancellationToken: _tokenSource.Token).ConfigureAwait(false);
+                var response = await _api.ConsumeMessagesAsync(QueueId, ConsumerGroupId, BatchSize, cancellationToken: _cancellationToken).ConfigureAwait(false);
                 var responses = response.ToList();
-                var eventArgs = new SubscriptionOnMessagesEventArgs(responses.Count);
                 if (responses.Count == 0)
-                {
-                    OnMessagesReceived?.Invoke(this, eventArgs);
-                    if (eventArgs.Cancel)
-                    {
-                        Stop();
-                    }
-                    else
-                    {
-                        _timer.Start();
-                    }
-                    return;
-                }
-
-                var messages = new List<DMSMessage>(responses.Select(x => x.Message));
-                OnMessagesReceived?.Invoke(this, eventArgs);
-                if (!eventArgs.Ready)
                 {
                     _timer.Start();
                     return;
                 }
 
                 await AkkMessages(responses).ConfigureAwait(false);
-                _messageHandler.HandleMessages(messages);
+                var messages = new List<DMSMessage>(responses.Select(x => x.Message));
+                if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
+                {
+                    messageProcessorSync.Process(messages);
+                }
+                else if (_messageProcessor is IMessageProcessorAsync messageProcessorAsync)
+                {
+                    await messageProcessorAsync.ProcessAsync(messages).ConfigureAwait(false);
+                }
             }
             catch (TaskCanceledException) { }
         }
@@ -98,46 +84,16 @@ namespace Ademund.OTC.DMSUtils
                     Status = DMSMessageAckStatus.Success
                 }).ToArray()
             };
-            var response = await _api.AckMessagesAsync(QueueId, ConsumerGroupId, messagesAck, cancellationToken: _tokenSource.Token).ConfigureAwait(false);
-        }
-
-        private void MessageHandler_OnProcessMessage(object sender, ProcessMessageEventArgs e)
-        {
-            OnProcessMessage?.Invoke(sender, e);
-            if (e.Cancel)
-            {
-                Stop();
-            }
-        }
-
-        private void MessageHandler_OnProcessMessageError(object sender, ProcessMessageErrorEventArgs e)
-        {
-            // TODO: put the message on an error queue
-        }
-
-        private async void MessageHandler_OnMessagesCompleted(object sender, MessagesCompletedEventArgs e)
-        {
-            OnMessagesCompleted?.Invoke(sender, e);
-            if (e.Cancel)
-            {
-                Stop();
-            }
-            else
-            {
-                await ConsumeMessages().ConfigureAwait(false);
-            }
+            var response = await _api.AckMessagesAsync(QueueId, ConsumerGroupId, messagesAck, cancellationToken: _cancellationToken).ConfigureAwait(false);
         }
 
         public void Start()
         {
-            _messageHandler.Start();
             _timer.Start();
         }
 
         public void Stop()
         {
-            _tokenSource.Cancel();
-            _messageHandler.Stop();
             _timer.Stop();
         }
     }
