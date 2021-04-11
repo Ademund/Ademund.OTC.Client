@@ -31,4 +31,4 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet nuget push --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate */bin/Release/**.nupkg
+      run: dotnet nuget push --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate **/*.nupkg
