@@ -51,29 +51,30 @@ namespace Ademund.OTC.DMSUtils
         {
             try
             {
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
-
-                var response = await _api.ConsumeMessagesAsync(QueueId, ConsumerGroupId, BatchSize, cancellationToken: _cancellationToken).ConfigureAwait(false);
-                var responses = response.ToList();
-                if (responses.Count == 0)
+                while (true)
                 {
-                    _timer.Start();
-                    return;
-                }
+                    if (_cancellationToken.IsCancellationRequested)
+                        return;
 
-                await AkkMessages(responses).ConfigureAwait(false);
-                var messages = new List<DMSMessage>(responses.Select(x => x.Message));
-                if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
-                {
-                    messageProcessorSync.Process(messages);
-                }
-                else if (_messageProcessor is IMessageProcessorAsync messageProcessorAsync)
-                {
-                    await messageProcessorAsync.ProcessAsync(messages).ConfigureAwait(false);
-                }
+                    var response = await _api.ConsumeMessagesAsync(QueueId, ConsumerGroupId, BatchSize, cancellationToken: _cancellationToken).ConfigureAwait(false);
+                    var responses = response.ToList();
+                    if (responses.Count == 0)
+                    {
+                        _timer.Start();
+                        return;
+                    }
 
-                _timer.Start();
+                    await AkkMessages(responses).ConfigureAwait(false);
+                    var messages = new List<DMSMessage>(responses.Select(x => x.Message));
+                    if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
+                    {
+                        messageProcessorSync.Process(messages);
+                    }
+                    else if (_messageProcessor is IMessageProcessorAsync messageProcessorAsync)
+                    {
+                        await messageProcessorAsync.ProcessAsync(messages).ConfigureAwait(false);
+                    }
+                }
             }
             catch (TaskCanceledException) { }
         }
