@@ -1,5 +1,6 @@
 ﻿using Ademund.OTC.Client;
 using Ademund.OTC.Client.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,13 +50,13 @@ namespace Ademund.OTC.DMSUtils
 
         private async Task ConsumeMessages()
         {
-            try
+            while (true)
             {
-                while (true)
-                {
-                    if (_cancellationToken.IsCancellationRequested)
-                        return;
+                if (_cancellationToken.IsCancellationRequested)
+                    return;
 
+                try
+                {
                     var response = await _api.ConsumeMessagesAsync(QueueId, ConsumerGroupId, BatchSize, cancellationToken: _cancellationToken).ConfigureAwait(false);
                     var responses = response.ToList();
                     if (responses.Count == 0)
@@ -75,8 +76,20 @@ namespace Ademund.OTC.DMSUtils
                         await messageProcessorAsync.ProcessAsync(messages).ConfigureAwait(false);
                     }
                 }
+                catch (TaskCanceledException) { }
+                catch (Exception ex)
+                {
+                    var exMessage = new List<DMSMessage>() { new DMSMessage() { Body = ex } };
+                    if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
+                    {
+                        messageProcessorSync.Process(exMessage);
+                    }
+                    else if (_messageProcessor is IMessageProcessorAsync messageProcessorAsync)
+                    {
+                        await messageProcessorAsync.ProcessAsync(exMessage).ConfigureAwait(false);
+                    }
+                }
             }
-            catch (TaskCanceledException) { }
         }
 
         private async Task AkkMessages(List<DMSConsumeMessageResponse> responses)
