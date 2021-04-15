@@ -79,14 +79,22 @@ namespace Ademund.OTC.DMSUtils
                 catch (TaskCanceledException) { }
                 catch (Exception ex)
                 {
-                    var exMessage = new List<DMSMessage>() { new DMSMessage() { Body = ex } };
-                    if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
+                    try
                     {
-                        messageProcessorSync.Process(exMessage);
+                        // TODO: this needs a logger to log the exception
+                        var exMessage = new List<DMSMessage>() { new DMSMessage() { Body = ex, Attributes = new Dictionary<string, string>() } };
+                        if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
+                        {
+                            messageProcessorSync.Process(exMessage);
+                        }
+                        else if (_messageProcessor is IMessageProcessorAsync messageProcessorAsync)
+                        {
+                            await messageProcessorAsync.ProcessAsync(exMessage).ConfigureAwait(false);
+                        }
                     }
-                    else if (_messageProcessor is IMessageProcessorAsync messageProcessorAsync)
+                    catch
                     {
-                        await messageProcessorAsync.ProcessAsync(exMessage).ConfigureAwait(false);
+                        // TODO: this should probably trigger an on error event back in the client
                     }
                 }
             }
