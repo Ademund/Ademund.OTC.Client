@@ -82,7 +82,13 @@ namespace Ademund.OTC.DMSUtils
                     try
                     {
                         // TODO: this needs a logger to log the exception
-                        var exMessage = new List<DMSMessage>() { new DMSMessage() { Body = ex, Attributes = new Dictionary<string, string>() } };
+                        var exMessage = new List<DMSMessage>() {
+                            new DMSMessage() {
+                                Body = new ExceptionMessage(null, ex),
+                                Attributes = new Dictionary<string, string>() { { "Type", typeof(ExceptionMessage).Name } }
+                            }
+                        };
+
                         if (_messageProcessor is IMessageProcessorSync messageProcessorSync)
                         {
                             messageProcessorSync.Process(exMessage);
@@ -120,5 +126,7 @@ namespace Ademund.OTC.DMSUtils
         {
             _timer.Stop();
         }
+
+        private record ExceptionMessage(object OriginalMessage, Exception Ex);
     }
 }
