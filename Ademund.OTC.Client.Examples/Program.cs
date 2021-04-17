@@ -1,5 +1,4 @@
 ﻿using Ademund.OTC.Client.Model;
-using Ademund.OTC.DMSUtils;
 using Ademund.OTC.Examples.Config;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -111,16 +110,6 @@ namespace Ademund.OTC.Client.Examples
                     Console.WriteLine($"createMessages: {createMessages}");
                 }
 
-                /*
-                Console.WriteLine("consume messages");
-                var messagePump = new DMSMessagePump(api);
-                var subscription = messagePump.Subscribe(queueId, consumerId, 15000);
-                subscription.OnMessages += Subscription_OnMessages;
-                messagePump.Start();
-                Console.WriteLine("Press a key to delete the q");
-                Console.ReadKey();
-                await api.DeleteQueue(queue.Id);
-                */
                 Console.WriteLine("Press any key to continue");
                 Console.ReadKey();
                 Console.Clear();

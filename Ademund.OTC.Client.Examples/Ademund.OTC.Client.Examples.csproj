@@ -32,7 +32,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ademund.OTC.Client\Ademund.OTC.Client.csproj" />
-		<ProjectReference Include="..\Ademund.OTC.DMSUtils\Ademund.OTC.DMSUtils.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
