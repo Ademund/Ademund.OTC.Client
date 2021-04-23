@@ -23,14 +23,18 @@ namespace Ademund.OTC.Client
         {
             int maxRetries = 0;
             int retryWait = 2;
-            if (request.Headers.Contains("MaxRetries") && !int.TryParse(request.Headers.Get("MaxRetries"), out maxRetries))
+            if (request.Headers.Contains("MaxRetries"))
             {
-                maxRetries = 0;
+                if (!int.TryParse(request.Headers.Get("MaxRetries"), out maxRetries))
+                    maxRetries = 0;
+                request.Headers.Remove("MaxRetries");
             }
 
-            if (request.Headers.Contains("RetryWait") && !int.TryParse(request.Headers.Get("RetryWait"), out retryWait))
+            if (request.Headers.Contains("RetryWait"))
             {
-                retryWait = 2;
+                if (!int.TryParse(request.Headers.Get("RetryWait"), out retryWait))
+                    retryWait = 2;
+                request.Headers.Remove("RetryWait");
             }
 
             if (maxRetries == 0)
