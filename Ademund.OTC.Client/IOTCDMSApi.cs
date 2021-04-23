@@ -43,11 +43,13 @@ namespace Ademund.OTC.Client
             [Path("queue_id")] string queueId,
             [Path("group_id")] string groupId);
 
+        [Header("MaxRetries", "3")]
         [Post("/v1.0/{project_id}/queues/{queue_id}/messages")]
         Task<DMSSendMessageResponseCollection> SendMessagesAsync(
             [Path("queue_id")] string queueId,
             [Body] DMSMessagesCollection messages);
 
+        [Header("MaxRetries", "3")]
         [Post("/v1.0/{project_id}/queues/{queue_id}/messages")]
         Task<DMSSendMessageResponseCollection> SendMessagesAsync<T>(
             [Path("queue_id")] string queueId,
