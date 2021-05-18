@@ -59,7 +59,7 @@ namespace Ademund.OTC.Client
         public static void Set(this HttpRequestHeaders headers, string name, string value)
         {
             if (headers.Contains(name)) headers.Remove(name);
-            headers.Add(name, value);
+            headers.TryAddWithoutValidation(name, value);
         }
 
         public static string Get(this HttpRequestHeaders headers, string name)
