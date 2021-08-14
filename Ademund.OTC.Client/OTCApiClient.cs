@@ -14,7 +14,7 @@ namespace Ademund.OTC.Client
         public static T InitOTCApi<T>(string baseUrl, string key, string secret, string projectId, string region = null, string service = null, string proxyAddress = null) where T: IOTCApiBase
         {
             IWebProxy proxy = string.IsNullOrWhiteSpace(proxyAddress) ? null : new WebProxy(proxyAddress);
-            var signer = new Signer(key, secret, region, service);
+            ISigner signer = service == "obs" ? new AWSSigner(key, secret, region, "s3") : new Signer(key, secret, region, service);
             var handler = new CustomHttpClientHandler(signer, proxy);
             var httpClient = new HttpClient(handler) {
                 BaseAddress = new Uri(baseUrl)
@@ -32,7 +32,7 @@ namespace Ademund.OTC.Client
             settings.Converters.Add(new VersionConverter());
 
             var restClient = new RestClient(httpClient) {
-                ResponseDeserializer = new CustomJsonResponseDeserializer(),
+                ResponseDeserializer = service == "obs" ? new CustomXmlResponseDeserializer() : new CustomJsonResponseDeserializer(),
                 JsonSerializerSettings = settings
             };
 

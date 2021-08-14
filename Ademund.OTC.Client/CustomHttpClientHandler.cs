@@ -12,7 +12,7 @@ namespace Ademund.OTC.Client
 {
     public class CustomHttpClientHandler : SigningHttpClientHandler
     {
-        public CustomHttpClientHandler(Signer signer, IWebProxy proxy = null) : base(signer)
+        public CustomHttpClientHandler(ISigner signer, IWebProxy proxy = null) : base(signer)
         {
             Proxy = proxy;
             UseProxy = proxy != null;
