@@ -6,6 +6,6 @@ namespace Ademund.OTC.Client.Model
     {
         [J("subject")] public string Subject { get; init; }
         [J("message")] public string Message { get; init; }
-        [J("time_to_live")] public int TTL { get; init; }
+        [J("time_to_live")] public int TTL { get; init; } = 3600;
     }
 }
